@@ -1183,9 +1183,13 @@ static void parse_owned_app_ids(class Settings *settings_client, class Settings 
             line.pop_back();
         }
 
+        // only a plain app ID: no sign, spaces or anything after the digits
+        if (line.empty() || line.size() > 10 || line.find_first_not_of("0123456789") != std::string::npos) continue;
+
         try {
-            AppId_t app_id = std::stoul(line);
-            if (!app_id || app_id == UINT32_MAX) continue;
+            unsigned long long id = std::stoull(line);
+            if (!id || id >= UINT32_MAX) continue;
+            AppId_t app_id = (AppId_t)id;
             settings_client->addOwnedApp(app_id);
             settings_server->addOwnedApp(app_id);
             PRINT_DEBUG("Added owned app with ID %u", app_id);
