@@ -1166,6 +1166,33 @@ static void parse_purchased_keys(class Settings *settings_client, class Settings
 
 }
 
+// owned_app_ids.txt
+static void parse_owned_app_ids(class Settings *settings_client, class Settings *settings_server)
+{
+    std::string owned_apps_list_path = Local_Storage::get_game_settings_path() + "owned_app_ids.txt";
+    std::ifstream input( std::filesystem::u8path(owned_apps_list_path) );
+    if (!input.is_open()) return;
+
+    common_helpers::consume_bom(input);
+    for( std::string line; getline( input, line ); ) {
+        if (!line.empty() && line[line.length()-1] == '\n') {
+            line.pop_back();
+        }
+
+        if (!line.empty() && line[line.length()-1] == '\r') {
+            line.pop_back();
+        }
+
+        try {
+            AppId_t app_id = std::stoul(line);
+            if (!app_id || app_id == UINT32_MAX) continue;
+            settings_client->addOwnedApp(app_id);
+            settings_server->addOwnedApp(app_id);
+            PRINT_DEBUG("Added owned app with ID %u", app_id);
+        } catch (...) {}
+    }
+}
+
 // installed_app_ids.txt
 static void parse_installed_app_Ids(class Settings *settings_client, class Settings *settings_server)
 {
@@ -2207,6 +2234,7 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
 
     parse_dlc(settings_client, settings_server);
     parse_installed_app_Ids(settings_client, settings_server);
+    parse_owned_app_ids(settings_client, settings_server);
     parse_app_paths(settings_client, settings_server, program_path);
     parse_purchased_keys(settings_client, settings_server);
 
