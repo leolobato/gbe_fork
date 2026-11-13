@@ -632,7 +632,7 @@ HINTERNET WINAPI Mine_WinHttpConnect(
     if ((InetPtonW(AF_INET, pswzServerName, &(ip4.sin_addr)) && is_lan_ip((sockaddr *)&ip4, sizeof(ip4))) || (InetPtonW(AF_INET6, pswzServerName, &(ip6.sin6_addr)) && is_lan_ip((sockaddr *)&ip6, sizeof(ip6)))) {
         return Real_WinHttpConnect(hSession, pswzServerName, nServerPort, dwReserved);
     } else {
-        return Real_WinHttpConnect(hSession, L"127.1.33.7", nServerPort, dwReserved);
+        return Real_WinHttpConnect(hSession, L"127.0.0.1", nServerPort, dwReserved);
     }
 }
 
