@@ -842,6 +842,11 @@ SteamAPICall_t Steam_Remote_Storage::GetPublishedFileDetails( PublishedFileId_t 
         mod.tags.copy(data.m_rgchTags, sizeof(data.m_rgchTags) - 1);
         mod.title.copy(data.m_rgchTitle, sizeof(data.m_rgchTitle) - 1);
         mod.workshopItemURL.copy(data.m_rgchURL, sizeof(data.m_rgchURL) - 1);
+
+        // Games from before ISteamUGC (Left 4 Dead 2) take the file handles from these details and call
+        // UGCDownload() with them, without a UGC query first: make them known as SendQueryUGCRequest() does.
+        ugc_bridge->add_ugc_query_result(mod.handleFile, unPublishedFileId, true);
+        ugc_bridge->add_ugc_query_result(mod.handlePreviewFile, unPublishedFileId, false);
     } else {
         data.m_eResult = EResult::k_EResultFail; // TODO is this correct?
     }
